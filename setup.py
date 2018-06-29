@@ -22,7 +22,9 @@ setup(
         'argparse',
         'pandas',
         'pprint',
-        'requests'
+        'requests',
+        'twitter-scraper',
+        'markovify'
     ],
     entry_points={
         'console_scripts': [
