@@ -14,7 +14,7 @@ import requests
 import argparse
 from pprint import pprint
 from statistics import mean
-import markovify
+from pyMarkov import markov
 import pandas as pd
 from twitter_scraper import get_tweets
 pd.set_option('display.max_columns', 500)
@@ -97,14 +97,20 @@ def main():
             tweets.append(item.text.strip())
         if args.verbose:
             print(tweets[0])
+        markov_dict = markov.train(tweets, 2) # 2 is the ply
+        with open('tweets.txt', 'w') as f:
+            for item in tweets:
+                f.write(item+'\n')
         #paragraph_of_tweets = '\n'.join(tweets)
-        paragraph_of_tweets = ". \n".join(str(x.replace('"','')) for x in tweets)
+        #paragraph_of_tweets = ". \n".join(str(x.replace('"','')) for x in tweets)
+        #if args.verbose:
+        #    print(paragraph_of_tweets)
+        #with open('tweets.txt', 'r') as f:
+        #    text_model = markovify.Text(f.read())
         if args.verbose:
-            print(paragraph_of_tweets)
-        text_model = markovify.Text(tweets[0])
-        if args.verbose:
-            for i in range(5):
-                print(text_model.make_sentence())
+            print(markov.generate(markov_dict, 140, 2))
+            #for i in range(5):
+                #print(text_model.make_sentence())
         exit()
 
     request_response = get_content()
