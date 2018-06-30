@@ -54,6 +54,7 @@ parser.add_argument('-c', '--category', dest='category_location', help='category
 parser.add_argument('-p', '--print', dest='print_me', help='print to screen results, helpful for testing', action='store_true', default=False)
 parser.add_argument('-n', '--no-logo', dest='logo_off', help='disables printing logo', action='store_true', default=False)
 parser.add_argument('-t', '--test', help='prints out james campbell data', action='store_true', default=False)
+parser.add_argument('-v', '--verbose', help='print more stuff', action='store_true')
 args = parser.parse_args()
 
 
@@ -85,11 +86,25 @@ def main():
     if args.test:
         r = requests.get(base64.b64decode(that_url).decode('utf8')+'/jamescampbell')
         #tweets = '\n'.join([t['text'] for t in get_tweets('jamescampbell', pages=2)])
-        print(r.text)
+        if args.verbose:
+            print(r.text)
         soup = BeautifulSoup(r.text, 'html.parser')
-        tweets = soup.get_text().split('. ')
-        text_model = markovify.Text(tweets)
-        print(text_model.make_short_sentence(140))
+        soup_tweets = soup.findAll('div', attrs={'class': 'tweet-text'})
+        tweets = []
+        for item in soup_tweets:
+            if item == '':
+                continue
+            tweets.append(item.text.strip())
+        if args.verbose:
+            print(tweets[0])
+        #paragraph_of_tweets = '\n'.join(tweets)
+        paragraph_of_tweets = ". \n".join(str(x.replace('"','')) for x in tweets)
+        if args.verbose:
+            print(paragraph_of_tweets)
+        text_model = markovify.Text(tweets[0])
+        if args.verbose:
+            for i in range(5):
+                print(text_model.make_sentence())
         exit()
 
     request_response = get_content()
