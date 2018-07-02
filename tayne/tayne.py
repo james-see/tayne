@@ -50,9 +50,7 @@ itunes_url_endpoint = 'https://itunes.apple.com/search?term={}&country=us&entity
 that_url='aHR0cHM6Ly9tb2JpbGUudHdpdHRlci5jb20='
 # arguments
 parser = argparse.ArgumentParser(description='collects and processes itunes data including ibook, application, and other store items with metadata, run "python3 test_itunize.py', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument('-s', '--search', dest='search_term', help='search term to search itunes store for', default='nginx', required=False)
-parser.add_argument('-c', '--category', dest='category_location', help='category in store to search for', default='software', required=False)
-parser.add_argument('-p', '--print', dest='print_me', help='print to screen results, helpful for testing', action='store_true', default=False)
+parser.add_argument('-u', '--username', help='username to search', default='jamescampbell', required=False)
 parser.add_argument('-n', '--no-logo', dest='logo_off', help='disables printing logo', action='store_true', default=False)
 parser.add_argument('-t', '--test', help='prints out james campbell data', action='store_true', default=False)
 parser.add_argument('-v', '--verbose', help='print more stuff', action='store_true')
@@ -62,10 +60,13 @@ args = parser.parse_args()
 # functions section
 
 
-def get_content():
-    """Get data from requests object from itunes endpoint."""
-    r = requests.get(itunes_url_endpoint.format(args['search_term'], args['category_location']))
-    return r
+def get_content(username):
+    """Get data."""
+    if username:
+        tweets = [t for t in get_tweets(username, pages=25)]
+    else:
+        tweets = ['error', 'no username set properly']
+    return tweets
 
 
 def get_mean(jsondata):
@@ -93,8 +94,11 @@ def main():
             exit()
             #print(r.text)
         exit()
-
-    request_response = get_content()
+    else:
+        tweets = get_content(args.username)
+        if args.verbose:
+            print(f"Total found: {len(tweets)}")
+            exit()
     jsondata = request_response.json()
     # [trend['name'] for trend in the_data[0]['trends']]
     print()
