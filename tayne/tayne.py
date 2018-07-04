@@ -98,6 +98,7 @@ def main():
         tweets = get_content(args.username)
         if args.verbose:
             print(f"Total found: {len(tweets)}")
+            print(f"First tweet {tweets[0]['time']}")
             exit()
     jsondata = request_response.json()
     # [trend['name'] for trend in the_data[0]['trends']]
