@@ -21,6 +21,7 @@ from twitter_scraper import get_tweets
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
 from bs4 import BeautifulSoup
+import datetime
 
 # globals
 __version__ = "0.1.0"
@@ -77,6 +78,9 @@ def get_mean(jsondata):
     else:
         return float(jsondata['results'][0]['price'])
 
+def get_other_mean(data):
+    if len(data) > 1:
+        return mean(data)
 
 # main section
 
@@ -97,8 +101,21 @@ def main():
     else:
         tweets = get_content(args.username)
         if args.verbose:
+            tweetbreak = []
             print(f"Total found: {len(tweets)}")
             print(f"First tweet {tweets[0]['time']}")
+            for idx, tweet in enumerate(tweets):
+                timeone = tweet['time']
+                try:
+                    timetwo = (tweets[idx+1]['time'])
+                except:
+                    timetwo = tweet['time']
+                #print(timetwo)
+                tdelta = timeone - timetwo
+                #print(tdelta.total_seconds())
+                tweetbreak.append(tdelta.total_seconds())
+            # print(tweetbreak[0])
+            print("Average time between tweets: {} minutes".format(get_other_mean(tweetbreak)/60))
             exit()
     jsondata = request_response.json()
     # [trend['name'] for trend in the_data[0]['trends']]
